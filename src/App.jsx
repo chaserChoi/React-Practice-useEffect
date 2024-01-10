@@ -7,11 +7,29 @@ import DeleteConfirmation from './components/DeleteConfirmation.jsx';
 import logoImg from './assets/logo.png';
 import { sortPlacesByDistance } from './loc.js';
 
+// 이 코드는 동시에 작동하고 App 컴포넌트 함수 실행이 끝나기를 기다릴 필요 X -> 시간 소요 X
+  const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
+  const storedPlaces = storedIds.map((id) =>
+    AVAILABLE_PLACES.find((place) => place.id === id)
+  );
+
 function App() {
+
   const modal = useRef();
   const selectedPlace = useRef();
   const [availablePlaces, setAvailablePlaces] = useState([]); // [
-  const [pickedPlaces, setPickedPlaces] = useState([]);
+  const [pickedPlaces, setPickedPlaces] = useState(storedPlaces);
+
+  // 200. useEffect 필요없는 경우
+  // localStorage를 사용하고 있는 반면, 사용자의 위치를 찾는 데 사용한 navigator 코드는 동시에 작동하기 때문
+  // useEffect(() => {
+  //   const storedIds = JSON.parse(localStorage.getItem('selectedPlaces')) || [];
+  //   const storedPlaces = storedIds.map(id =>
+  //     AVAILABLE_PLACES.find((place) => place.id === id)
+  //   );
+
+  //   setPickedPlaces(storedPlaces);
+  // }, []);
 
   // 198. useEffect Hook
   // useEffect(1.() => {}, 2.[]) : 1. 부수 효과를 묶어줄 함수, 2. 의존성 배열
@@ -59,6 +77,18 @@ function App() {
       const place = AVAILABLE_PLACES.find((place) => place.id === id);
       return [place, ...prevPickedPlaces];
     });
+
+    // 199. 부수 효과의 또 다른 예시
+    // 위의 navigator 코드와 달리 useEffect Hook을 사용 X
+    // 훅의 특성 때문에 함수 내 훅 사용 X
+    // handleSelectPlace 함수는 컴포넌트 함수가 재실행되어도 재실행 X
+    const storedIds = JSON.parse(localStorage.getItem('selectedPlaces')) || [];
+    if (storedIds.indexOf(id) === -1) {
+      localStorage.setItem(
+        "selectedPlaces",
+        JSON.stringify([id, ...storedIds])
+      );
+    }
   }
 
   function handleRemovePlace() {
@@ -66,6 +96,12 @@ function App() {
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
     );
     modal.current.close();
+
+    const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
+    localStorage.setItem(
+      'selectedPlaces', 
+      JSON.stringify(storedIds.filter((id) => id !== selectedPlace.current))
+    );
   }
 
   return (

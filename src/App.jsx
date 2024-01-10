@@ -5,11 +5,27 @@ import { AVAILABLE_PLACES } from './data.js';
 import Modal from './components/Modal.jsx';
 import DeleteConfirmation from './components/DeleteConfirmation.jsx';
 import logoImg from './assets/logo.png';
+import { sortPlacesByDistance } from './loc.js';
 
 function App() {
   const modal = useRef();
   const selectedPlace = useRef();
+  const [availablePlaces, setAvailablePlaces] = useState([]); // [
   const [pickedPlaces, setPickedPlaces] = useState([]);
+
+  // 196~197 : Side Effect(부수 효과)
+  // 현재 컴포넌트 렌더링 과정에 직접적으로 관여하지 않는 작업
+  // But, 상태 업데이트 함수 호출 -> 상태가 포함된 컴포넌트 함수 재실행 -> 무한 루프 발생
+  // -> useEffect Hook 사용!
+  navigator.geolocation.getCurrentPosition((position) => {
+    const sortedPlaces = sortPlacesByDistance(
+      AVAILABLE_PLACES,
+      position.coords.altitude,
+      position.coords.longitude
+    );
+
+    setAvailablePlaces(sortedPlaces)
+  });
 
   function handleStartRemovePlace(id) {
     modal.current.open();

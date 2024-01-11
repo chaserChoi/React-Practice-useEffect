@@ -1,11 +1,27 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+const TIMER = 3000;
 
 export default function DeleteConfirmation({ onConfirm, onCancel }) {
+  const [remainingTime, setRemainingTime] = useState(TIMER);
+
+  // 209. useEffect의 Clean-up 함수
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("INTERVAL");
+      setRemainingTime((prevTime) => prevTime - 10);
+    }, 10);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+  
   useEffect(() => {
     console.log("TIMER SET");
     const timer = setTimeout(() => {
       onConfirm();
-    }, 3000);
+    }, TIMER);
     
     // 206. Clean-up Function: 부수 효과 함수의 반환 값
     // Clean-up 함수는 Effect 함수가 최초로 작동되기 바로 전에 작동 X
@@ -28,6 +44,7 @@ export default function DeleteConfirmation({ onConfirm, onCancel }) {
           Yes
         </button>
       </div>
+      <progress value={remainingTime} max={TIMER} />
     </div>
   );
 }

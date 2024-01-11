@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 import Places from './components/Places.jsx';
 import { AVAILABLE_PLACES } from './data.js';
@@ -94,19 +94,38 @@ function App() {
     }
   }
 
-  function handleRemovePlace() {
+  // 208. useCallback Hook
+  // 함수를 반환하는 함수를 반환하는 함수
+  // useCallback(() => {}, []) : 1. 함수를 반환하는 함수, 2. 의존성 배열
+  // 의존성 배열에 있는 값이 변경되지 않으면, 함수를 반환하는 함수는 이전에 반환한 함수를 반환
+  // 의존성 배열에 있는 값이 변경되면, 함수를 반환하는 함수는 새로운 함수를 반환
+  const handleRemovePlace = useCallback(function handleRemovePlace() {
     setPickedPlaces((prevPickedPlaces) =>
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
     );
     // modal.current.close();
-    // setModalOpen(false);
+    setModalOpen(false);
 
     const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
     localStorage.setItem(
-      'selectedPlaces', 
+      "selectedPlaces",
       JSON.stringify(storedIds.filter((id) => id !== selectedPlace.current))
     );
-  }
+  }, []);
+
+  // function handleRemovePlace() {
+  //   setPickedPlaces((prevPickedPlaces) =>
+  //     prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
+  //   );
+  //   // modal.current.close();
+  //   // setModalOpen(false);
+
+  //   const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
+  //   localStorage.setItem(
+  //     'selectedPlaces', 
+  //     JSON.stringify(storedIds.filter((id) => id !== selectedPlace.current))
+  //   );
+  // }
 
   return (
     <>

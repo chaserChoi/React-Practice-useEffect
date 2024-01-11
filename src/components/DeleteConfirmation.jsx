@@ -1,21 +1,24 @@
-import { useEffect, useState } from "react";
+// 201. 상태 업데이트 최적화
+import { useEffect } from "react";
+
+import ProgressBar from "./progressBar";
 
 const TIMER = 3000;
 
 export default function DeleteConfirmation({ onConfirm, onCancel }) {
-  const [remainingTime, setRemainingTime] = useState(TIMER);
+  // const [remainingTime, setRemainingTime] = useState(TIMER);
 
-  // 209. useEffect의 Clean-up 함수
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log("INTERVAL");
-      setRemainingTime((prevTime) => prevTime - 10);
-    }, 10);
+  // // 209. useEffect의 Clean-up 함수
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     console.log("INTERVAL");
+  //     setRemainingTime((prevTime) => prevTime - 10);
+  //   }, 10);
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
   
   useEffect(() => {
     console.log("TIMER SET");
@@ -44,7 +47,7 @@ export default function DeleteConfirmation({ onConfirm, onCancel }) {
           Yes
         </button>
       </div>
-      <progress value={remainingTime} max={TIMER} />
+      <ProgressBar timer={TIMER} />
     </div>
   );
 }
